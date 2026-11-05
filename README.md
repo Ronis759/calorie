@@ -52,30 +52,6 @@ PWA & Cache: Web App Manifest (manifest.json), Service Worker (sw.js).
 
 🚀 Запуск и установка
 
-Локальный запуск
-
-Так как приложение использует Service Worker и доступ к камере, его необходимо запускать через локальный веб-сервер (по протоколу http://localhost или https://):
-
-Клонируйте репозиторий:
-
-git clone https://github.com/your-username/calories-tracker.git
-cd calories-tracker
-
-
-Запустите любой локальный сервер, например:
-
-Node.js (npx):
-
-npx serve .
-
-
-Python 3:
-
-python -m http.server 8000
-
-
-Откройте адрес http://localhost:8000 в вашем браузере.
-
 Установка на мобильное устройство (PWA)
 
 Разверните проект на любом статическом хостинге с поддержкой HTTPS (GitHub Pages, Vercel, Netlify, Cloudflare Pages).
