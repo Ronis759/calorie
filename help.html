@@ -1,0 +1,120 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e0510b"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-180.png">
+<title>Справка · Калории</title>
+<style>
+:root{--bg:#fff6ee;--card:#fff;--tx:#2b2230;--mu:#6f6475;--ln:#f3e8e0;--g:linear-gradient(135deg,#e0510b,#c2255c)}
+@media(prefers-color-scheme:dark){:root:not([data-mode]){--bg:#17131a;--card:#231d27;--tx:#f5eef7;--mu:#b4a9bb;--ln:#352d3a}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 -apple-system,system-ui,sans-serif;padding:calc(env(safe-area-inset-top) + 10px) 14px calc(env(safe-area-inset-bottom) + 30px)}
+main{max-width:560px;margin:0 auto}
+.back{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:14px;background:var(--card);color:#c2255c;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(224,81,11,.15)}
+.hero{background:var(--g);color:#fff;border-radius:26px;padding:22px 20px;margin:12px 0 16px}
+.hero h1{margin:0 0 6px;font-size:26px;line-height:1.15}.hero p{margin:0;font-size:16px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.toc a{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:20px;background:var(--card);color:var(--tx);text-decoration:none;font-size:14px;font-weight:600;border:2px solid var(--c)}
+.s{--c:#e0510b;background:var(--card);border-radius:22px;padding:16px;margin-bottom:14px;border-left:8px solid var(--c);scroll-margin-top:12px}
+.s h2{margin:0 0 10px;font-size:20px;display:flex;align-items:center;gap:10px}
+.s h2 i{font-style:normal;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--c);font-size:21px;flex:none}
+.s p{margin:8px 0}.s ul,.s ol{margin:8px 0;padding-left:22px}.s li{margin:5px 0}
+.mu{color:var(--mu)}
+.tip{margin:10px 0 2px;padding:10px 12px;border-radius:14px;background:var(--bg);font-size:15px}
+.tip b{color:var(--c)}
+.chip{display:inline-block;padding:1px 9px;border-radius:10px;color:#fff;font-weight:700;font-size:14px;background:var(--c)}
+.g1{--c:#e0510b}.g2{--c:#c2255c}.g3{--c:#2f9e44}.g4{--c:#7048e8}.g5{--c:#1c7ed6}.g6{--c:#d9480f}.g7{--c:#0c8599}
+.cal{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.cal span{padding:6px 12px;border-radius:12px;font-size:14px;font-weight:600}
+details{border-top:1px solid var(--ln)}details:first-of-type{border-top:0}
+summary{min-height:48px;display:flex;align-items:center;font-weight:600;cursor:pointer}
+details p{margin:0 0 12px}
+.ic{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-.22em;display:inline-block}
+.s h2 i .ic{width:22px;height:22px;color:#fff}.chip .ic{width:15px;height:15px;vertical-align:-.2em}.toc a .ic{width:16px;height:16px;margin-right:6px}.hero h1 .ic{width:28px;height:28px;vertical-align:-.25em}.back .ic{margin-right:4px}</style><script>
+const PAL=[['sun','Закат','#e0510b','#c2255c'],['sea','Океан','#1c7ed6','#0c8599'],['for','Лес','#2f9e44','#0c8599'],['lav','Лаванда','#7048e8','#c2255c'],['ros','Роза','#d6336c','#e0510b'],['gra','Графит','#495057','#212529']];
+function applyTheme(o){try{o=o||{};const R=document.documentElement,dark=o.theme==='dark'||(o.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches);
+const p=PAL.find(x=>x[0]===o.pal);let c1,c2;const hs=x=>{const n=parseInt(x.slice(1),16),r=(n>>16)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx===r?((g-b)/d+6)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60}return[Math.round(h),Math.round(s*100),Math.round(l*100)]};
+const H=(h,s,l,a)=>`hsl(${(h+360)%360} ${s}% ${l}%${a!=null?' / '+a:''})`;
+let h1,s1,l1,h2,s2,l2;
+if(p){[h1,s1,l1]=hs(p[2]);[h2,s2,l2]=hs(p[3])}else{const c=/^#[0-9a-f]{6}$/i.test(o.cust)?o.cust:'#e0510b';[h1,s1,l1]=hs(c);l1=Math.min(l1,52);h2=h1-30;s2=s1;l2=Math.max(l1-8,20)}
+const bs=Math.min(100,Math.round(s1*1.1)),set=(k,v)=>R.style.setProperty(k,v);
+set('--g',`linear-gradient(135deg,${H(h1,s1,l1)},${H(h2,s2,l2)})`);
+set('--ac',dark?H(h1,s1,Math.max(l1,66)):H(h1,s1,Math.min(l1,44)));
+set('--er','#d64545');
+if(dark){set('--bg',H(h1,Math.round(bs*.22),8.5));set('--card',H(h1,Math.round(bs*.2),13));set('--tx','#f5eef7');set('--mu',H(h1,10,67));set('--ln',H(h1,Math.round(bs*.16),21));set('--sh','none');set('--sa','none');set('--ti',`linear-gradient(135deg,${H(h1,Math.round(bs*.4),24)},${H(h2,Math.round(bs*.4),28)})`)}
+else{set('--bg',H(h1,bs,96.5));set('--card','#fff');set('--tx','#2b2230');set('--mu','#8a7f90');set('--ln',H(h1,Math.round(bs*.55),91));set('--sh',`0 6px 20px ${H(h1,s1,l1,.14)}`);set('--sa',`0 6px 16px ${H(h1,s1,l1,.35)}`);set('--ti',`linear-gradient(135deg,${H(h1,100,89)},${H(h2,100,91)})`)}
+R.dataset.mode=dark?'dark':'light';R.style.colorScheme=dark?'dark':'light';
+const m=document.querySelector('meta[name=theme-color]');if(m)m.content=dark?H(h1,Math.round(bs*.22),8.5):H(h1,s1,l1)}catch(e){}}
+try{applyTheme(JSON.parse(localStorage.getItem('cal')||'{}'))}catch(e){}
+try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{try{applyTheme(JSON.parse(localStorage.getItem('cal')||'{}'))}catch(e){}})}catch(e){}
+</script></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-utensils" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol><symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 7v10"/><path d="M12 7v10"/><path d="M16 7v10"/></symbol><symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol><symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol><symbol id="i-settings" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol><symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol><symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol><symbol id="i-chev-l" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol><symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-server" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol><symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol><symbol id="i-sunrise" viewBox="0 0 24 24"><path d="M12 2v8M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M8 6l4-4 4 4M16 18a4 4 0 0 0-8 0"/></symbol><symbol id="i-sunset" viewBox="0 0 24 24"><path d="M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0"/></symbol><symbol id="i-cookie" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01M16 15.5v.01M12 12v.01M11 17v.01M7 14v.01"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol><symbol id="i-soup" viewBox="0 0 24 24"><path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"/><path d="M7 21h10"/><path d="M6 3c.5.5.5 1.5 0 2.5S5.5 7 6 7.5M11 3c.5.5.5 1.5 0 2.5S10.5 7 11 7.5M16 3c.5.5.5 1.5 0 2.5S15.5 7 16 7.5"/></symbol><symbol id="i-egg" viewBox="0 0 24 24"><path d="M12 2C8 2 4 8 4 14a8 8 0 0 0 16 0c0-6-4-12-8-12"/></symbol><symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol><symbol id="i-burger" viewBox="0 0 24 24"><path d="M4 11a8 7 0 0 1 16 0Z"/><path d="M3 15h18"/><path d="M5 15v1a4 4 0 0 0 4 4h6a4 4 0 0 0 4-4v-1"/></symbol><symbol id="i-fish" viewBox="0 0 24 24"><path d="M3 12c3-5 9-6 13-3l5-3v12l-5-3c-4 3-10 2-13-3Z"/><path d="M8 11.5h.01"/></symbol><symbol id="i-glass" viewBox="0 0 24 24"><path d="M5 3h14l-2 18H7Z"/><path d="M6 9h12"/></symbol><symbol id="i-coffee" viewBox="0 0 24 24"><path d="M6 2v2M10 2v2M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/></symbol><symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 7c-1.5-1.5-6-1-7 3-1 4 1 10 4 11 1.2.4 2-.5 3-.5s1.8.9 3 .5c3-1 5-7 4-11-1-4-5.5-4.5-7-3Z"/><path d="M12 7c0-2 1-4 3-5"/></symbol></defs></svg><main>
+<a class="back" href="./"><svg class="ic" aria-hidden="true"><use href="#i-chev-l"/></svg> Назад в дневник</a>
+<div class="hero"><h1><svg class="ic" aria-hidden="true"><use href="#i-utensils"/></svg> Как пользоваться «Калориями»</h1><p>Снимаешь блюдо, приложение оценивает калории и БЖУ, ты проверяешь и добавляешь в дневник. Всё хранится на твоём телефоне.</p></div>
+<nav class="toc"><a class="g1" href="#start" style="--c:#e0510b"><svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg> Старт</a><a href="#home" style="--c:#c2255c"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg> Главный экран</a><a href="#add" style="--c:#2f9e44"><svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg> Добавить еду</a><a href="#diary" style="--c:#7048e8"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg> Дневник</a><a href="#cal" style="--c:#1c7ed6"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg> Календарь</a><a href="#set" style="--c:#d9480f"><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg> Настройки</a><a href="#faq" style="--c:#0c8599"><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg> Вопросы</a></nav>
+
+<section class="s g1" id="start"><h2><i><svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg></i>Быстрый старт</h2>
+<ol><li>Открой <svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg> и впиши <b>адрес сервера</b> и <b>пароль</b> (делается один раз).</li>
+<li>По желанию задай <b>цель</b> в ккал на день.</li>
+<li>Нажми кнопку <span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg> Фото</span> над полем ввода и сфотографируй блюдо.</li>
+<li>Проверь граммы и нажми <b>«Добавить»</b>. Приём пищи подставится по времени, при желании смени его в окне результата.</li></ol>
+<div class="tip"><b>Совет:</b> добавь приложение на экран «Домой»: Поделиться → «На экран Домой». Оно откроется как обычное, без адресной строки.</div></section>
+
+<section class="s g2" id="home"><h2><i><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg></i>Главный экран</h2>
+<ul><li><b>Кольцо</b> показывает, сколько калорий <b>осталось</b> до цели. Если цель превышена, число станет «+120» и «сверх цели», а кольцо жёлтым.</li>
+<li>Без цели кольцо пустое, а в центре те калории, что <b>съедено</b>.</li>
+<li><b>Белки, жиры, углеводы</b> за день лежат справа от кольца.</li>
+<li><b><svg class="ic" aria-hidden="true"><use href="#i-chev-l"/></svg> <svg class="ic" aria-hidden="true"><use href="#i-chev-r"/></svg></b> переключают день. Нажми на карточку с кольцом, чтобы открыть календарь.</li>
+<li>Дневник свёрнут по приёмам пищи: нажми на «Завтрак», «Обед», «Ужин» или «Перекус», чтобы раскрыть записи. Рядом видны число записей и сумма калорий. Приём пищи, куда ты только что добавил блюдо, раскрывается сам.</li>
+<li>Внизу экрана три кнопки: <b><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg> Календарь</b>, <b><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg> Справка</b> и <b><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg> Настройки</b>.</li>
+<li><b>Приём пищи</b> (завтрак, обед, ужин, перекус) определяется по времени добавления: до 11:00 завтрак, до 16:00 обед, до 21:00 ужин, позже перекус. Сменить его можно вручную в окне результата или в избранном.</li></ul></section>
+
+<section class="s g3" id="add"><h2><i><svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg></i>Добавить еду</h2>
+<p>Четыре кнопки стоят над полем ввода:</p>
+<ul><li><span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-image"/></svg> Галерея</span> фото, которое уже есть на телефоне.</li>
+<li><span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg> Фото</span> снимок блюда прямо сейчас.</li>
+<li><span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-scan"/></svg> Баркод</span> сканирование упаковки.</li>
+<li><span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg> Избранное</span> любимые блюда одним касанием.</li></ul>
+<p><b>Текстом.</b> Опиши, что съел, в поле ввода, например «гречка 200 г и две сосиски». Как только ты начнёшь печатать, справа появится кнопка <span class="chip">Отправить</span> (или нажми Enter на клавиатуре). Если сначала написать текст, а потом снять фото, текст станет уточнением к фото.</p>
+<p><b>Штрихкод упаковки.</b> Кнопка <span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-scan"/></svg> Баркод</span>:</p>
+<ul><li>наведи камеру на штрихкод, и приложение найдёт продукт в базе Open Food Facts и покажет калории и БЖУ на 100 г;</li>
+<li>можно сфотографировать код (<b>«Фото кода»</b>) или ввести цифры под ним;</li>
+<li>порция берётся из базы, если она там указана, иначе 100 г. Граммы меняй как обычно;</li>
+<li>если продукта нет в базе или в ней нет калорий, введи данные с упаковки вручную. Они запомнятся, и в следующий раз продукт найдётся сразу, даже без интернета. Исправить их можно кнопкой <svg class="ic" aria-hidden="true"><use href="#i-pencil"/></svg> в окне результата.</li></ul>
+<p><b>Окно результата.</b> После анализа открывается карточка с блюдом и продуктами:</p>
+<ul><li><b>− и +</b> меняют вес порциями, а можно ввести число вручную. Калории и БЖУ пересчитываются сразу.</li>
+<li><b><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></b> убирает лишний продукт, например соус, которого на самом деле не было.</li>
+<li>Сверху стоит <b>приём пищи</b>, выбранный по текущему времени. Нажми на другой, чтобы сменить, кнопка подпишется, например «Добавить: Обед».</li>
+<li><b><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg></b> сохраняет блюдо в избранное, <b><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></b> закрывает без записи.</li></ul>
+<div class="tip"><b>Для упаковки:</b> штрихкод точнее, чем фото: калории берутся с этикетки, а не оцениваются на глаз.</div>
+<div class="tip"><b>Для точности:</b> снимай сверху при хорошем свете, чтобы была видна вся тарелка. Если ИИ ошибся в блюде, допиши уточнение в поле над дневником (например «суп с курицей, без сметаны») и сними снова.</div></section>
+
+<section class="s g4" id="diary"><h2><i><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg></i>Дневник</h2>
+<ul><li>Записи сгруппированы по приёмам пищи, справа сумма калорий.</li>
+<li><b>Нажми на название</b> записи, чтобы изменить граммы или приём пищи.</li>
+<li><b>Исправить состав.</b> Нажми на название записи: откроется окно с ингредиентами. Нажми на ингредиент, чтобы изменить название, граммы и калории с БЖУ на 100 г. Кнопка «Добавить ингредиент» добавляет новый: опиши словами (ИИ посчитает) или введи вручную. Итог пересчитывается сразу. Название блюда меняется нажатием на него.</li>
+<li><b><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg></b> в строке добавляет блюдо в избранное.</li>
+<li><b><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></b> удаляет запись, но внизу на 5 секунд появится кнопка <b>«Отменить»</b>.</li></ul>
+<div class="tip"><b>Повтор еды:</b> блюда, которые ты ешь часто, отправь в <svg class="ic" aria-hidden="true"><use href="#i-star"/></svg>. Потом достаточно нажать на плитку, и запись окажется в выбранном приёме пищи.</div></section>
+
+<section class="s g5" id="cal"><h2><i><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></i>Календарь</h2>
+<p>Под каждым днём калории за день. Нажми на день, чтобы открыть его дневник.</p>
+<div class="cal"><span style="background:rgba(47,194,139,.3)">В пределах цели</span><span style="background:rgba(255,107,74,.3)">Больше цели</span><span style="outline:2px solid #e0510b">Сегодня</span></div>
+<p class="mu">Внизу показано среднее по дням с записями.</p></section>
+
+<section class="s g6" id="set"><h2><i><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg></i>Настройки и копии</h2>
+<ul><li><b>Тема</b>: «Авто» следует за настройкой телефона, либо выбери светлую или тёмную.</li>
+<li><b>Цвет оформления</b>: готовые темы (Закат, Океан, Лес, Лаванда, Роза, Графит) или «Свой цвет» с ползунками оттенка, насыщенности и яркости. Выбор запоминается и действует и в справке.</li>
+<li><b>Цель</b> необязательна, но с ней работает кольцо «осталось».</li>
+<li><b>Настройка по ссылке.</b> Если тебе прислали ссылку вида <code>…#setup=…</code>, просто открой её: адрес и пароль подставятся сами. Если приложение уже стоит на экране «Домой», скопируй ссылку и нажми «Вставить ссылку настройки» в блоке подключения.</li>
+<li><b>Подключение к серверу</b> адрес и пароль нужны для анализа фото. Блок раскрывается сам, пока они не заполнены.</li>
+<li><b><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Копия</b> открывает меню iPhone: «Сохранить в Файлы» или отправь себе. В копию входят и найденные штрихкоды.</li>
+<li><b><svg class="ic" aria-hidden="true"><use href="#i-clipboard"/></svg> Из буфера</b> и <b><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg> Из файла</b> восстанавливают дневник из копии.</li></ul>
+<div class="tip"><b>Раз в неделю</b> делай копию. Приложение само напомнит, если ей давно не пользовались.</div></section>
+
+<section class="s g7" id="faq"><h2><i><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg></i>Частые вопросы</h2>
+<details><summary>Работает ли без интернета?</summary><p>Дневник, календарь и избранное работают офлайн. Для анализа фото и текста и для поиска нового штрихкода нужен интернет. Штрихкоды, которые уже находились раньше, открываются и без него.</p></details>
+<details><summary>Где хранятся данные?</summary><p>Только на телефоне, внутри приложения. На сервер уходит лишь фото или текст для анализа, а сам дневник нет. При сканировании в Open Food Facts отправляется только номер штрихкода.</p></details>
+<details><summary>Пропали записи после установки на «Домой»</summary><p>Safari и иконка на экране «Домой» хранят данные отдельно. Сделай копию в Safari и восстанови её в приложении через «<svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg> Из файла» или «<svg class="ic" aria-hidden="true"><use href="#i-clipboard"/></svg> Из буфера».</p></details>
+<details><summary>Анализ не запускается</summary><p>Проверь адрес сервера и пароль в <svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg>. Если сообщение «Превышено время ожидания», попробуй ещё раз или опиши блюдо текстом.</p></details>
+<details><summary>Калории не совпадают с упаковкой</summary><p>Это оценка по фото. Для упакованных продуктов лучше отсканировать штрихкод или поправить граммы в окне результата.</p></details>
+<details><summary>Штрихкод не читается или камера не включается</summary><p>Разреши камеру для приложения в настройках iPhone. Держи код ровно, при хорошем свете, на расстоянии 10–20 см. Если не выходит, нажми «Фото кода» или введи цифры под штрихкодом.</p></details>
+<details><summary>Продукта нет в базе штрихкодов</summary><p>Введи название и калории с БЖУ на 100 г с упаковки. Приложение запомнит их для этого штрихкода.</p></details>
+<details><summary>Как получить обновление?</summary><p>Закрой приложение и открой снова, при связи оно обновится само. Версия указана внизу настроек.</p></details></section>
+</main></body></html>
