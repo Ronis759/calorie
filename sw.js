@@ -1,4 +1,4 @@
-const VERSION='v12.1',C='cal-'+VERSION,F=['./','index.html','manifest.json','help.html','icon-180.png','icon-192.png','icon-512.png','VERSION'];
+const VERSION='v12.2',C='cal-'+VERSION,F=['./','index.html','manifest.json','help.html','icon-180.png','icon-192.png','icon-512.png','VERSION'];
 
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(C).then(c=>c.addAll(F).then(()=>c.add('zxing.min.js').catch(()=>{}))).then(()=>self.skipWaiting()));
