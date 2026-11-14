@@ -19,7 +19,9 @@ main{max-width:520px;margin:0 auto}
 .rc b{font-size:28px;line-height:1}.rc span{font-size:12px}#ring{transition:stroke-dashoffset .6s}
 .ms{flex:1;display:grid;gap:8px}.m{background:rgba(255,255,255,.22);border-radius:12px;padding:7px 10px;display:flex;justify-content:space-between;font-size:15px}
 .card{background:var(--card);border-radius:20px;padding:14px;margin-bottom:12px;box-shadow:var(--sh)}
-button,.btn{font:inherit;font-weight:600;min-height:44px;min-width:44px;border:0;border-radius:14px;padding:0 12px;background:var(--ac);color:#fff;touch-action:manipulation;display:flex;align-items:center;justify-content:center;position:relative;gap:6px;cursor:pointer}
+button,.btn{font:inherit;font-weight:600;min-height:44px;min-width:44px;border:0;border-radius:14px;padding:0 12px;background:var(--ac);color:#fff;touch-action:manipulation;display:flex;align-items:center;justify-content:center;position:relative;gap:6px;cursor:pointer;transition:transform .14s ease,filter .14s ease,box-shadow .14s ease}
+button:active,.btn:active{transform:scale(.96);filter:brightness(.94);box-shadow:0 2px 6px rgba(0,0,0,.12)}
+button:focus-visible,.btn:focus-visible{outline:3px solid color-mix(in srgb,var(--ac) 45%,transparent);outline-offset:2px}
 .btn{background:var(--g)}.sec{background:var(--bg);color:var(--ac)}.gl{background:rgba(255,255,255,.25);width:44px;min-height:44px;padding:0;font-size:22px}
 .x{background:transparent;color:var(--mu);font-size:20px;padding:0;min-width:36px}
 input[type=text],input[type=number],input[type=url],input[type=password]{font-size:16px;width:100%;min-height:46px;border:1px solid var(--ln);border-radius:12px;padding:0 12px;background:var(--bg);color:var(--tx)}
@@ -53,9 +55,12 @@ h3{margin:0 0 4px}label.l{display:block;margin:10px 0 4px;color:var(--mu);font-s
 a.gb{display:flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700}
 .bar{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:520px;z-index:10;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:stretch;padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);background:var(--card);border-radius:24px 24px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.12)}
 .bar .ab{width:100%;min-width:0;height:58px;min-height:58px;padding:4px 2px;font-size:12px;line-height:1.15;white-space:normal;flex-direction:column}a.ab{text-decoration:none}.acts .ab{font-weight:600}.acts .ab:not(.sec){box-shadow:var(--sa)}.acts .ab.sec{border:1px solid var(--ln)}
-.busy .acts,.busy #sendb{opacity:.5;pointer-events:none}.busy #msg::before{content:'⏳ '}
+.busy .acts,.busy #sendb{opacity:.5;pointer-events:none}.busy #msg::before{content:'⏳ '}.busy #msg{animation:msgPulse 1.2s ease-in-out infinite}
+@keyframes msgPulse{50%{opacity:.5}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 .ub{display:inline-flex;min-height:34px;padding:0 12px;margin-left:8px;background:rgba(255,255,255,.22);border-radius:12px;font-size:14px}
 .over #ring{stroke:#ffe066}.st{min-width:40px;min-height:40px;padding:0;font-size:22px;border-radius:12px}
+.ring-pop{animation:ringPop .45s ease-out}@keyframes ringPop{50%{filter:brightness(1.35)}}
 .rth{width:56px;height:56px;border-radius:14px;object-fit:cover}#res .it{gap:6px}.it .nm[data-e]{cursor:pointer}
 .mh{align-items:center;min-height:44px;cursor:pointer;user-select:none;gap:8px;border-radius:12px}.mh>span:first-child{flex:1}.mh .ar{display:inline-block;width:18px;color:var(--mu);transition:transform .2s}.mh.op .ar{transform:rotate(90deg)}.mh b{font-weight:700}
 .rg{-webkit-appearance:none;appearance:none;width:100%;height:28px;border-radius:14px;background:var(--bg);border:1px solid var(--ln);padding:0;min-height:0}.rg::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--ac);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}.rg::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--ac);border:3px solid #fff}.rg.hue{background:linear-gradient(90deg,red,#ff0,#0f0,#0ff,#00f,#f0f,red)}.cpn{margin-top:4px}
@@ -95,10 +100,11 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{try
 
 <div class="row" style="margin-top:8px"><button id="copyYesterday" class="sec" style="width:100%">Повторить вчерашний день</button></div><p id="msg" class="mu" style="margin:8px 0 0"></p></div>
 <section class="sheet" id="res" hidden><div class="sh-h"><img id="rth" class="rth" alt="" hidden><div style="flex:1"><b id="dish"></b><div class="mu" id="cmt" style="font-size:14px"></div></div></div><div class="seg"></div><div id="items"></div><button class="sec" id="addi" style="width:100%;margin:6px 0 0"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Добавить ингредиент</button><div id="addp" class="addp" hidden><div id="ai-row"><div class="row"><input type="text" id="ai-t" placeholder="Опиши: например, ложка сметаны" enterkeyhint="send"><button class="sec" id="ai-go" style="flex:0 0 auto">Найти</button></div><p class="mu" style="font-size:13px;margin:6px 0 10px">ИИ посчитает калории сам. Или введи вручную:</p></div><input type="text" id="ip-n" placeholder="Название"><div class="g4"><div><label class="l">Граммы</label><input type="number" inputmode="decimal" id="ip-g" min="0"></div><div><label class="l">Ккал/100 г</label><input type="number" inputmode="decimal" id="ip-k" min="0"></div><div><label class="l">Белки/100 г</label><input type="number" inputmode="decimal" id="ip-p" min="0"></div><div><label class="l">Жиры/100 г</label><input type="number" inputmode="decimal" id="ip-f" min="0"></div><div><label class="l">Углев./100 г</label><input type="number" inputmode="decimal" id="ip-c" min="0"></div></div><div class="row" style="margin-top:12px"><button id="ip-ok">Добавить</button><button class="sec" id="ip-no">Отмена</button></div></div><div class="big" id="tot" style="margin:8px 0"></div><div class="row"><button id="add" style="flex:3"></button><button class="sec" id="fav" aria-label="В избранное"><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg></button><button class="sec" id="bced" aria-label="Править данные штрихкода" hidden><svg class="ic" aria-hidden="true"><use href="#i-pencil"/></svg></button><button class="sec" id="no" aria-label="Закрыть"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div></section>
-<div class="card"><h3>Дневник</h3><div id="list"></div></div>
+<div class="card"><h3>Дневник</h3><div id="list"></div><button class="sec" id="histb" style="width:100%;margin-top:10px">История распознаваний</button></div>
 </main>
 <div class="ov" id="ov" hidden></div>
 <section class="sheet" id="s-fav" hidden><div class="sh-h"><b><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg> Избранное</b><button class="sec sm" id="fe" style="flex:0 0 auto">Изменить</button><button class="x" data-c><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div><div class="seg"></div><div id="favs" class="grid"></div></section>
+<section class="sheet" id="s-history" hidden><div class="sh-h"><b>История распознаваний</b><button class="x" data-c aria-label="Закрыть"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div><div id="history"></div></section>
 <section class="sheet" id="s-cal" hidden><div class="sh-h"><button class="sec sm" id="cp" style="flex:0 0 44px"><svg class="ic" aria-hidden="true"><use href="#i-chev-l"/></svg></button><b id="cm" style="text-align:center"></b><button class="sec sm" id="cn" style="flex:0 0 44px"><svg class="ic" aria-hidden="true"><use href="#i-chev-r"/></svg></button><button class="x" data-c><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div><div class="cal" id="cal"></div><h3 style="margin-top:16px">Графики калорий</h3><div class="row"><button class="sec" id="chartWeek">Неделя</button><button class="sec" id="chartMonth">Месяц</button></div><div id="chart" style="margin-top:10px"></div><p class="mu" id="cs" style="text-align:center;font-size:14px;margin:12px 0 0"></p></section>
 <section class="sheet" id="s-scan" hidden><div class="sh-h"><b>Штрихкод</b><button class="x" data-c><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>
 <p class="mu" id="sm" style="margin:0 0 8px;font-size:14px;min-height:20px"></p>
@@ -118,10 +124,10 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{try
 <label class="l">Пароль приложения</label><input type="password" id="tok"><button class="sec" id="lnk" style="width:100%;margin-top:10px">Вставить ссылку настройки</button></details>
 
 <div class="acts" style="grid-template-columns:repeat(3,1fr);margin-top:14px"><button class="ab bkb"><i><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg></i>Копия</button><button class="ab sec" id="pst"><i><svg class="ic" aria-hidden="true"><use href="#i-clipboard"/></svg></i>Из буфера</button><label class="btn ab sec"><i><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></i>Из файла<input class="f" type="file" accept="application/json,.json" id="imp"></label></div>
-<p class="mu" style="font-size:13px">«Копия» открывает меню iPhone: выбери «Сохранить в Файлы» или отправь себе. Данные в Safari и в приложении с экрана «Домой» хранятся раздельно.</p><p class="mu" style="font-size:12px">Версия v10.9 · <a href="help.html" style="color:var(--ac)">Справка</a></p></section>
+<p class="mu" style="font-size:13px">«Копия» открывает меню iPhone: выбери «Сохранить в Файлы» или отправь себе. Данные в Safari и в приложении с экрана «Домой» хранятся раздельно.</p><p class="mu" style="font-size:12px">Версия v11.1 · <a href="help.html" style="color:var(--ac)">Справка</a></p></section>
 <nav class="bar"><button class="ab sec" id="calb"><i><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></i>Календарь</button><button class="ab sec" id="gear"><i><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg></i>Настройки</button></nav>
 <div id="toast"></div><script src="zxing.min.js" defer></script><script>
-const $=id=>document.getElementById(id),def={entries:[],favs:[],weights:[],profile:{},goal:0,url:'',token:'',lastBackup:0,theme:'auto',pal:'sun',cust:'#e0510b'};
+const $=id=>document.getElementById(id),def={entries:[],favs:[],history:[],weights:[],profile:{},goal:0,url:'',token:'',lastBackup:0,theme:'auto',pal:'sun',cust:'#e0510b'};
 const M=[['b','sunrise','Завтрак'],['l','sun','Обед'],['d','sunset','Ужин'],['s','cookie','Перекус']];
 const ic=(n,c)=>`<svg class="ic${c?' '+c:''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const IC=[['суп|борщ|щи|бульон','soup'],['яйц|омлет|яичн','egg'],['салат|овощ|огур|помидор|томат','leaf'],['каш|овсян|гречк|рис|плов','soup'],['макарон|паста|спагетти|лапш','soup'],['пицц','burger'],['бургер','burger'],['сэндвич|бутерброд|тост|хлеб','burger'],['курин|кури|птиц|индейк','utensils'],['мяс|стейк|говяд|свин|котлет|колбас|сосис','utensils'],['рыб|лосос|тунец|креветк|суши|ролл','fish'],['картоф|пюре|фри','leaf'],['творог|сыр|йогурт|молок|кефир','glass'],['кофе|капучино|латте','coffee'],['чай','coffee'],['сок|напит|компот','coffee'],['яблок|банан|фрукт|ягод|апельсин','apple'],['торт|пирож|печень|шоколад|десерт|конфет|мороженое|выпечк|булк|круассан','cookie'],['пельмен|вареник|хинкали|блин|оладь','burger']];
@@ -130,8 +136,8 @@ const ico=f=>ico1(f.dish)||ico1((f.items||[]).map(i=>i.name).join(' '))||ic('ute
 const auto=d=>{const h=d.getHours();return h<11?'b':h<16?'l':h<21?'d':'s'};
 const OPEN=new Set();
 let busy=false,S=load(),day=new Date(),cur=null,meal=auto(new Date()),favEdit=false,calM=new Date(),tt;
-function load(){let o;try{o=Object.assign({},def,JSON.parse(localStorage.getItem('cal')||'{}'))}catch(e){o={...def}}if(!Array.isArray(o.entries))o.entries=[];if(!Array.isArray(o.favs))o.favs=[];if(!o.barcodes||typeof o.barcodes!=='object'||Array.isArray(o.barcodes))o.barcodes={};o.goal=+o.goal||0;return o}
-function fixS(){if(!Array.isArray(S.entries))S.entries=[];if(!Array.isArray(S.favs))S.favs=[];if(!S.barcodes||typeof S.barcodes!=='object'||Array.isArray(S.barcodes))S.barcodes={};S.goal=+S.goal||0}
+function load(){let o;try{o=Object.assign({},def,JSON.parse(localStorage.getItem('cal')||'{}'))}catch(e){o={...def}}if(!Array.isArray(o.entries))o.entries=[];if(!Array.isArray(o.favs))o.favs=[];if(!Array.isArray(o.history))o.history=[];if(!o.barcodes||typeof o.barcodes!=='object'||Array.isArray(o.barcodes))o.barcodes={};o.goal=+o.goal||0;return o}
+function fixS(){if(!Array.isArray(S.entries))S.entries=[];if(!Array.isArray(S.favs))S.favs=[];if(!Array.isArray(S.history))S.history=[];if(!S.barcodes||typeof S.barcodes!=='object'||Array.isArray(S.barcodes))S.barcodes={};S.goal=+S.goal||0}
 function save(){try{localStorage.setItem('cal',JSON.stringify(S));return true}catch(e){toast('Не удалось сохранить: память заполнена');return false}}
 const pad=n=>String(n).padStart(2,'0'),dk=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const val=(i,k)=>{const bg=+i.b?.g||0;return bg>0?(+i.b[k]||0)*(+i.g||0)/bg:(+i.b?.[k]||0)};
@@ -139,7 +145,8 @@ const r0=n=>Math.round(n||0),mealOf=x=>x.meal||auto(new Date(x.id||Date.now()));
 const tot=a=>{const t={k:0,p:0,f:0,c:0};(a||[]).forEach(i=>{for(const x in t)t[x]+=val(i,x)});return t};
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const bz=t=>`Б ${r0(t.p)} · Ж ${r0(t.f)} · У ${r0(t.c)}`,cl=o=>JSON.parse(JSON.stringify(o));
-function toast(t){const e=$('toast');if(!e)return;e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),1800)}
+function haptic(ms=10){try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
+function toast(t){const e=$('toast');if(!e)return;e.textContent=t;e.classList.add('on');haptic(8);clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),1800)}
 function openS(id){const ov=$('ov'),el=$(id);if(ov)ov.hidden=false;if(el)el.hidden=false;document.body.style.overflow='hidden'}
 function closeS(){stopScan();const ov=$('ov');if(ov)ov.hidden=true;document.querySelectorAll('.sheet').forEach(s=>s.hidden=true);document.body.style.overflow=''}
 const ovEl=$('ov');if(ovEl)ovEl.onclick=()=>{if($('res').hidden)closeS()};
@@ -148,7 +155,7 @@ function hideRes(){$('res').hidden=true;cur=null;$('ov').hidden=true;document.bo
 function undoT(t,fn){const e=$('toast');e.textContent=t+' ';const b=document.createElement('button');b.textContent='Отменить';b.className='ub';b.onclick=()=>{fn();e.classList.remove('on')};e.appendChild(b);e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),5000)}
 document.addEventListener('click',e=>{if(e.target.closest('[data-c]'))closeS();const b=e.target.closest('[data-m]');if(b){meal=b.dataset.m;drawSeg()}});
 function shrink(file,max,q){return new Promise((ok,bad)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',q))};im.onerror=()=>{URL.revokeObjectURL(u);bad(new Error('Не удалось открыть фото'))};im.src=u})}
-function msg(t,e){const m=$('msg');if(!m)return;m.textContent=t||'';m.style.color=e?'var(--er)':'var(--mu)'}
+function msg(t,e){const m=$('msg');if(!m)return;m.textContent=t||'';m.style.color=e?'var(--er)':'var(--mu)';if(t&&!e)haptic(6)}
 function extractJSON(str){
   if(!str)return null;
   const m=str.match(/```(?:json)?\s*([\s\S]*?)```/i),t=m?m[1]:str;
@@ -184,7 +191,7 @@ const j=JSON.parse(jsonStr);
 const items=mapItems(j);
 if(!items.length){msg('Еда не найдена. Попробуй по-другому.',1);return}
  const confidence=Math.max(0,Math.min(100,num(j.confidence||j.confidence_percent||0)));if(!confirm((confidence?`Уверенность ИИ: ${confidence}%`:'Проверь состав и вес — оценка ИИ приблизительная')+'\n\nСохранить результат распознавания?')){msg('Результат не сохранён');return}
- meal=auto(new Date());cur={dish:String(j.dish||'Блюдо'),items,comment:String(j.comment||''),thumb};msg('');drawRes();
+ const result={dish:String(j.dish||'Блюдо'),items:cl(items),comment:String(j.comment||''),thumb};S.history.unshift({id:Date.now(),createdAt:Date.now(),...result});S.history=S.history.slice(0,50);save();meal=auto(new Date());cur=result;msg('');drawRes();
 }catch(e){clearTimeout(timeoutId);msg(e.name==='AbortError'?'Превышено время ожидания сервера':'Не вышло: '+e.message,1)}}
 function drawRes(){const resEl=$('res');if(!resEl)return;showRes();$('addp').hidden=true;$('addi').hidden=false;const t=$('rth');t.hidden=!cur.thumb;if(cur.thumb)t.src=cur.thumb;const be=$('bced');if(be)be.hidden=!cur.bc;$('dish').textContent=cur.dish;$('cmt').textContent=cur.comment;
 $('items').innerHTML=cur.items.map((i,n)=>`<div class="it" data-it="${n}"><div class="nm" data-ed="${n}">${esc(i.name)}${ic('pencil')}<small class="ikcal">${r0(val(i,'k'))} ккал</small></div><button class="sec st" data-u="${n}:-1" aria-label="Меньше">−</button><input type="number" inputmode="decimal" min="0" value="${i.g}" data-n="${n}"><button class="sec st" data-u="${n}:1" aria-label="Больше">+</button><span>г</span><button class="x" data-d="${n}" aria-label="Убрать"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>`).join('');sum()}
@@ -224,7 +231,7 @@ function drawSeg(){lab();document.querySelectorAll('.seg').forEach(s=>s.innerHTM
 function drawFavs(){$('fe').textContent=favEdit?'Готово':'Изменить';$('favs').innerHTML=S.favs.length?S.favs.map(f=>`<div class="tile" data-f="${esc(f.id)}"><div class="ti">${ico(f)}</div><div class="tn">${esc(f.dish)}</div><div class="tk">${r0(tot(f.items).k)} ккал</div>${favEdit?`<button class="tdel" data-fd="${esc(f.id)}"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>`:''}</div>`).join(''):'<p class="mu" style="grid-column:1/-1">Пока пусто. Нажми <svg class="ic" aria-hidden="true"><use href="#i-star"/></svg> у блюда в результате или в дневнике.</p>'}
 function drawDay(){const k=dk(day),E=S.entries.filter(x=>x.day===k),t=tot(E.flatMap(x=>x.items)),g=S.goal;
 $('dl').textContent=k===dk(new Date())?'Сегодня':day.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});
-const left=g-t.k;$('dt').textContent=g?(left>=0?r0(left):'+'+r0(-left)):r0(t.k);$('dg').textContent=g?(left>=0?'осталось ккал':'сверх цели'):'съедено ккал';$('ring').style.strokeDashoffset=314.2*(g?1-Math.min(1,t.k/g):1);$('hero').classList.toggle('over',!!g&&left<0);
+const left=g-t.k;$('dt').textContent=g?(left>=0?r0(left):'+'+r0(-left)):r0(t.k);$('dg').textContent=g?(left>=0?'осталось ккал':'сверх цели'):'съедено ккал';$('ring').style.strokeDashoffset=314.2*(g?1-Math.min(1,t.k/g):1);$('ring').classList.remove('ring-pop');void $('ring').offsetWidth;$('ring').classList.add('ring-pop');$('hero').classList.toggle('over',!!g&&left<0);
 $('mp').textContent=r0(t.p)+' г';$('mf').textContent=r0(t.f)+' г';$('mcb').textContent=r0(t.c)+' г';drawSeg();
 $('list').innerHTML=E.length?M.map(m=>{const L=E.filter(x=>mealOf(x)===m[0]);if(!L.length)return'';const q=tot(L.flatMap(x=>x.items));const o=OPEN.has(m[0]);return`<div class="mh${o?' op':''}" data-mh="${m[0]}" role="button" tabindex="0" aria-expanded="${o}"><span><i class="ar">${ic('chev-r')}</i>${ic(m[1])} ${m[2]} <small style="display:inline" class="mu">· ${L.length}</small></span><span class="mu">${r0(q.k)} ккал</span></div>`+(o?L.map(row).join(''):'')}).join(''):'<p class="mu">Пока пусто. Сними блюдо или выбери из избранного.</p>';
 $('bk').hidden=!(S.entries.length&&Date.now()-(S.lastBackup||0)>6048e5)}
@@ -241,6 +248,9 @@ $('cp').onclick=()=>{calM.setMonth(calM.getMonth()-1);drawCal()};$('cn').onclick
 $('calb').onclick=()=>$('hero').click();
 $('hero').onclick=e=>{if(e.target.closest('button'))return;calM=new Date(day.getFullYear(),day.getMonth(),1);drawCal();openS('s-cal')};
 $('favb').onclick=()=>{meal=auto(new Date());drawFavs();drawSeg();openS('s-fav')};$('gear').onclick=()=>openS('s-set');
+function drawHistory(){const h=$('history');if(!h)return;h.innerHTML=S.history.length?S.history.map(x=>`<div class="it"><div class="nm"><b>${esc(x.dish)}</b><small>${new Date(x.createdAt).toLocaleString('ru-RU')} · ${r0(tot(x.items).k)} ккал</small></div><button class="sec" data-hi="${x.id}">Повторить</button><button class="x" data-hd="${x.id}" aria-label="Удалить">×</button></div>`).join(''):'<p class="mu">История пока пуста</p>'}
+$('histb').onclick=()=>{drawHistory();openS('s-history')};
+$('history').onclick=e=>{const del=e.target.closest('[data-hd]');if(del){S.history=S.history.filter(x=>String(x.id)!==del.dataset.hd);save();drawHistory();return}const b=e.target.closest('[data-hi]');if(b){const x=S.history.find(y=>String(y.id)===b.dataset.hi);if(x){meal=auto(new Date());cur={dish:x.dish,items:cl(x.items),comment:x.comment||'Повтор из истории',thumb:x.thumb||''};drawSeg();drawRes()}}};
 $('favs').onclick=e=>{const d=e.target.closest('[data-fd]');if(d){S.favs=S.favs.filter(f=>String(f.id)!==d.dataset.fd);save();drawFavs();return}const c=e.target.closest('[data-f]');if(!c||favEdit)return;const f=S.favs.find(x=>String(x.id)===c.dataset.f);if(f){addE(f.dish,cl(f.items),f.thumb);toast('✓ '+f.dish+' → '+M.find(m=>m[0]===meal)[2])}};
 $('fe').onclick=()=>{favEdit=!favEdit;drawFavs()};
 $('list').onclick=e=>{const mh=e.target.closest('[data-mh]');if(mh){const k=mh.dataset.mh;OPEN.has(k)?OPEN.delete(k):OPEN.add(k);drawDay();return}const r=e.target.dataset.r,sv=e.target.dataset.s,nm=e.target.closest('[data-e]');
@@ -348,7 +358,7 @@ function calculateGoals(){const p=S.profile||{};p.age=+$('age').value||0;p.heigh
 function addWeight(){const v=+$('weight').value;if(!v){toast('Укажи вес');return}S.weights=S.weights||[];S.weights.push({day:dk(new Date()),value:v});S.profile=S.profile||{};S.profile.weight=v;save();drawProfile();toast('Вес записан')}
 function searchHistory(){const q=($('foodSearch').value||'').trim().toLowerCase(),a=[...(S.favs||[]),...(S.entries||[])].filter(x=>(x.dish||'').toLowerCase().includes(q));$('foodResults').innerHTML=a.slice(0,20).map(x=>`<div class="it"><span class="nm">${esc(x.dish)}</span><small>${r0(tot(x.items).k)} ккал</small></div>`).join('')||'<p class="mu">Ничего не найдено</p>'}
 function copyYesterday(){const d=new Date(day);d.setDate(d.getDate()-1);const a=S.entries.filter(x=>x.day===dk(d));if(!a.length){toast('Вчера записей не было');return}a.forEach(x=>S.entries.push({...cl(x),id:Date.now()+Math.random(),day:dk(day)}));save();drawDay();toast('Питание скопировано')}
-function diagnostics(){const e=$('diag');if(e)e.textContent=`Хранилище: ${navigator.storage?'доступно':'ограничено'} · Записей: ${S.entries.length} · Избранных: ${S.favs.length} · Офлайн: ${navigator.onLine?'нет':'да'} · Версия v10.9`}
+function diagnostics(){const e=$('diag');if(e)e.textContent=`Хранилище: ${navigator.storage?'доступно':'ограничено'} · Записей: ${S.entries.length} · Избранных: ${S.favs.length} · Офлайн: ${navigator.onLine?'нет':'да'} · Версия v11.0`}
 
 function init(){applyTheme(S);drawTheme();syncSl();$('conn').open=!(S.url&&S.token);$('url').value=S.url;$('tok').value=S.token;drawProfile();drawDay()}
 $('calb').onclick=()=>$('hero').click();$('gear').onclick=()=>openS('s-set');
