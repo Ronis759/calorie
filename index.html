@@ -118,7 +118,7 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{try
 <label class="l">Пароль приложения</label><input type="password" id="tok"><button class="sec" id="lnk" style="width:100%;margin-top:10px">Вставить ссылку настройки</button></details>
 
 <div class="acts" style="grid-template-columns:repeat(3,1fr);margin-top:14px"><button class="ab bkb"><i><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg></i>Копия</button><button class="ab sec" id="pst"><i><svg class="ic" aria-hidden="true"><use href="#i-clipboard"/></svg></i>Из буфера</button><label class="btn ab sec"><i><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></i>Из файла<input class="f" type="file" accept="application/json,.json" id="imp"></label></div>
-<p class="mu" style="font-size:13px">«Копия» открывает меню iPhone: выбери «Сохранить в Файлы» или отправь себе. Данные в Safari и в приложении с экрана «Домой» хранятся раздельно.</p><p class="mu" style="font-size:12px">Версия v9.4 · <a href="help.html" style="color:var(--ac)">Справка</a></p></section>
+<p class="mu" style="font-size:13px">«Копия» открывает меню iPhone: выбери «Сохранить в Файлы» или отправь себе. Данные в Safari и в приложении с экрана «Домой» хранятся раздельно.</p><p class="mu" style="font-size:12px">Версия v9.5 · <a href="help.html" style="color:var(--ac)">Справка</a></p></section>
 <nav class="bar"><button class="ab sec" id="calb"><i><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></i>Календарь</button><a class="btn ab sec" href="help.html"><i><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg></i>Справка</a><button class="ab sec" id="gear"><i><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg></i>Настройки</button></nav>
 <div id="toast"></div><script src="zxing.min.js" defer></script><script>
 const $=id=>document.getElementById(id),def={entries:[],favs:[],goal:0,url:'',token:'',lastBackup:0,theme:'auto',pal:'sun',cust:'#e0510b'};
@@ -132,7 +132,7 @@ const OPEN=new Set();
 let busy=false,S=load(),day=new Date(),cur=null,meal=auto(new Date()),favEdit=false,calM=new Date(),tt;
 function load(){let o;try{o=Object.assign({},def,JSON.parse(localStorage.getItem('cal')||'{}'))}catch(e){o={...def}}if(!Array.isArray(o.entries))o.entries=[];if(!Array.isArray(o.favs))o.favs=[];if(!o.barcodes||typeof o.barcodes!=='object'||Array.isArray(o.barcodes))o.barcodes={};o.goal=+o.goal||0;return o}
 function fixS(){if(!Array.isArray(S.entries))S.entries=[];if(!Array.isArray(S.favs))S.favs=[];if(!S.barcodes||typeof S.barcodes!=='object'||Array.isArray(S.barcodes))S.barcodes={};S.goal=+S.goal||0}
-function save(){try{localStorage.setItem('cal',JSON.stringify(S))}catch(e){toast('Не удалось сохранить: память заполнена')}}
+function save(){try{localStorage.setItem('cal',JSON.stringify(S));return true}catch(e){toast('Не удалось сохранить: память заполнена');return false}}
 const pad=n=>String(n).padStart(2,'0'),dk=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const val=(i,k)=>{const bg=+i.b?.g||0;return bg>0?(+i.b[k]||0)*(+i.g||0)/bg:(+i.b?.[k]||0)};
 const r0=n=>Math.round(n||0),mealOf=x=>x.meal||auto(new Date(x.id||Date.now()));
@@ -176,8 +176,8 @@ const controller = new AbortController();
 const timeoutId = setTimeout(() => controller.abort(), 25000);
 try{let img='',thumb='';if(file){img=await shrink(file,1024,.8);thumb=await shrink(file,90,.6)}
 const r=await fetch(S.url,{method:'POST',headers:{'Content-Type':'application/json','X-App-Token':S.token},body:JSON.stringify({image:img,note}),signal:controller.signal});
-clearTimeout(timeoutId);
 const d=await r.json().catch(()=>({error:'Сервер вернул не JSON'}));
+clearTimeout(timeoutId);
 if(!r.ok)throw new Error((d.error||'Ошибка')+(d.status?' ('+d.status+')':''));
 const jsonStr=extractJSON(d.text||d.result||'');if(!jsonStr)throw new Error('ИИ ответил не в том формате');
 const j=JSON.parse(jsonStr);
@@ -200,8 +200,8 @@ edIdx>=0?cur.items[edIdx]=it:cur.items.push(it);drawRes()};
 $('ai-go').onclick=async()=>{if(busy)return;const t=$('ai-t').value.trim();if(!t){toast('Опиши, что добавить');return}
 if(!S.url||!S.token){toast('Сначала впиши адрес сервера и пароль в настройках');return}
 busy=true;const b=$('ai-go');b.disabled=true;b.textContent='…';const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),25000);
-try{const r=await fetch(S.url,{method:'POST',headers:{'Content-Type':'application/json','X-App-Token':S.token},body:JSON.stringify({image:'',note:t}),signal:ctl.signal});clearTimeout(to);
-const d=await r.json().catch(()=>({error:'Сервер вернул не JSON'}));if(!r.ok)throw new Error((d.error||'Ошибка')+(d.status?' ('+d.status+')':''));
+try{const r=await fetch(S.url,{method:'POST',headers:{'Content-Type':'application/json','X-App-Token':S.token},body:JSON.stringify({image:'',note:t}),signal:ctl.signal});
+const d=await r.json().catch(()=>({error:'Сервер вернул не JSON'}));clearTimeout(to);if(!r.ok)throw new Error((d.error||'Ошибка')+(d.status?' ('+d.status+')':''));
 const js=extractJSON(d.text||d.result||'');if(!js)throw new Error('ИИ ответил не в том формате');const its=mapItems(JSON.parse(js));
 if(!its.length){toast('Ничего не найдено');return}cur.items.push(...its);drawRes();toast('Добавлено: '+its.map(x=>x.name).join(', '))}
 catch(e){clearTimeout(to);toast(e.name==='AbortError'?'Превышено время ожидания':'Не вышло: '+e.message)}finally{busy=false;b.disabled=false;b.textContent='Найти'}};
@@ -213,9 +213,9 @@ if(itemsEl){
   const row=e.target.closest('.it');if(row)row.querySelector('.ikcal').textContent=r0(val(i,'k'))+' ккал';sum()});
   itemsEl.addEventListener('click',e=>{const u=e.target.dataset.u;if(u!=null){const[k,d]=u.split(':'),i=cur.items[k],st=i.g<50?5:i.g<200?10:25;i.g=Math.max(0,i.g+(+d)*st);const row=e.target.closest('.it');row.querySelector('input').value=i.g;row.querySelector('.ikcal').textContent=r0(val(i,'k'))+' ккал';sum();return}const ed=e.target.closest('[data-ed]');if(ed&&!e.target.closest('button,input')){openAddp(+ed.dataset.ed);return}const dl=e.target.closest('[data-d]'),n=dl?dl.dataset.d:null;if(n==null)return;cur.items.splice(n,1);cur.items.length?drawRes():hideRes()});
 }
-function addE(dish,items,thumb){OPEN.add(meal);S.entries.push({id:Date.now(),day:dk(day),meal,dish,items,thumb:thumb||''});save();drawDay()}
+function addE(dish,items,thumb){OPEN.add(meal);S.entries.push({id:Date.now(),day:dk(day),meal,dish,items,thumb:thumb||''});if(!save())S.entries.pop();drawDay()}
 function addF(dish,items,thumb){if(S.favs.some(f=>f.dish===dish)){toast('Уже в избранном')}else{S.favs.push({id:Date.now(),dish,items:cl(items),thumb:thumb||''});save();toast('Добавлено в избранное')}}
-$('add').onclick=()=>{if(!cur)return;if(cur.eid){const x=S.entries.find(y=>y.id===cur.eid);if(x){x.items=cur.items;x.dish=cur.dish;x.meal=meal;OPEN.add(meal);save();drawDay()}}else{addE(cur.dish,cur.items,cur.thumb);$('note').value='';draft('');updSend()}hideRes()};
+$('add').onclick=()=>{if(!cur)return;if(cur.eid){const x=S.entries.find(y=>y.id===cur.eid);if(x){const old=cl(x);x.items=cur.items;x.dish=cur.dish;x.meal=meal;OPEN.add(meal);if(!save())Object.assign(x,old);drawDay()}}else{addE(cur.dish,cur.items,cur.thumb);$('note').value='';draft('');updSend()}hideRes()};
 $('fav').onclick=()=>{if(cur)addF(cur.dish,cur.items,cur.thumb)};$('no').onclick=hideRes;
 const row=x=>{const q=tot(x.items);return`<div class="it">${x.thumb?`<img src="${esc(x.thumb)}" alt="">`:`<div class="ph">${ico(x)}</div>`}<div class="nm" data-e="${esc(x.id)}">${esc(x.dish)}<small>${r0(q.k)} ккал · ${bz(q)}</small></div><button class="x" data-s="${esc(x.id)}" aria-label="В избранное"><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg></button><button class="x" data-r="${esc(x.id)}" aria-label="Удалить" style="margin-left:10px"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>`};
 function lab(){const a=$('add');if(a)a.textContent=cur&&cur.eid?'Сохранить':'Добавить: '+M.find(m=>m[0]===meal)[2]}
@@ -298,8 +298,7 @@ async function found(raw){
   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),10000);
   try{
     const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+code+'.json?fields=product_name,product_name_ru,brands,serving_quantity,nutriments',{signal:ctl.signal});
-    clearTimeout(to);
-    const d=await r.json().catch(()=>({})),p=d&&d.status===1&&d.product?d.product:null;
+    const d=await r.json().catch(()=>({}));clearTimeout(to);const p=d&&d.status===1&&d.product?d.product:null;
     if(!p){manual(code,'Этого продукта нет в базе. Введи данные с упаковки на 100 г',null);return}
     const n=p.nutriments||{},has=n['energy-kcal_100g']!=null||n['energy_100g']!=null;
     const k=n['energy-kcal_100g']!=null?num(n['energy-kcal_100g']):num(n['energy_100g'])/4.184;
