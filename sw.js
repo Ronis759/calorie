@@ -1,4 +1,4 @@
-const VERSION='v11.8',C='cal-'+VERSION,F=['./','index.html','manifest.json','help.html','icon-180.png','icon-192.png','icon-512.png','VERSION'];
+const VERSION='v11.9',C='cal-'+VERSION,F=['./','index.html','manifest.json','help.html','icon-180.png','icon-192.png','icon-512.png','VERSION'];
 
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(C).then(c=>c.addAll(F).then(()=>c.add('zxing.min.js').catch(()=>{}))).then(()=>self.skipWaiting()));
@@ -9,6 +9,10 @@ self.addEventListener('activate',e=>{
     caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x))))
     .then(()=>self.clients.claim())
   );
+});
+
+self.addEventListener('message',e=>{
+  if(e.data==='SKIP_WAITING')self.skipWaiting();
 });
 
 const put=(r,x)=>{if(x&&x.ok&&x.type==='basic'){const y=x.clone();caches.open(C).then(c=>c.put(r,y))}return x};
