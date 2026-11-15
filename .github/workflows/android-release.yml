@@ -1,0 +1,137 @@
+name: Сборка APK (подписанный)
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'index.html'
+      - 'help.html'
+      - 'sw.js'
+      - 'manifest.json'
+      - 'zxing.min.js'
+      - 'icon-*.png'
+      - 'VERSION'
+      - '.github/workflows/android-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Собрать подписанный APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить исходники приложения
+        uses: actions/checkout@v4
+
+      - name: Подготовить Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Подготовить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Установить компоненты Android SDK
+        run: |
+          SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then SDKMANAGER="$(command -v sdkmanager)"; fi
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" --install "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+
+      - name: Скачать Android-обёртку
+        run: |
+          curl -fsSL -o wrapper.tar.gz https://github.com/Ronis759/calorie_apk/archive/refs/heads/master.tar.gz
+          mkdir -p "$RUNNER_TEMP/wrapper"
+          tar -xzf wrapper.tar.gz -C "$RUNNER_TEMP/wrapper" --strip-components=1
+
+      - name: Положить свежие файлы приложения в обёртку
+        run: |
+          W="$RUNNER_TEMP/wrapper"
+          rm -rf "$W/www" "$W/android/app/src/main/assets/public"
+          mkdir -p "$W/www"
+          cp index.html help.html sw.js manifest.json zxing.min.js icon-180.png icon-192.png icon-512.png "$W/www/"
+
+      - name: Подставить версию
+        run: |
+          W="$RUNNER_TEMP/wrapper"
+          VER=$(tr -d '\r\n' < VERSION)
+          CODE=$(echo "$VER" | tr -d '.')
+          sed -i "s/versionName \"[^\"]*\"/versionName \"${VER}\"/" "$W/android/app/build.gradle"
+          sed -i "s/versionCode [0-9]*/versionCode ${CODE}/" "$W/android/app/build.gradle"
+          grep -E 'version(Code|Name)' "$W/android/app/build.gradle"
+
+      - name: Восстановить ключ подписи из секретов
+        id: keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::Секреты подписи не заданы — будет собран отладочный APK. Добавьте ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS и ANDROID_KEY_PASSWORD."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          ls -l "$RUNNER_TEMP/release.jks"
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Установить зависимости
+        working-directory: ${{ runner.temp }}/wrapper
+        run: npm ci
+
+      - name: Синхронизировать Capacitor
+        working-directory: ${{ runner.temp }}/wrapper
+        run: npx cap sync android
+
+      - name: Собрать APK
+        working-directory: ${{ runner.temp }}/wrapper/android
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          SIGNED: ${{ steps.keystore.outputs.signed }}
+        run: |
+          chmod +x gradlew
+          if [ "$SIGNED" = "true" ]; then
+            ./gradlew assembleRelease --no-daemon --stacktrace
+          else
+            ./gradlew assembleDebug --no-daemon --stacktrace
+          fi
+
+      - name: Переименовать APK
+        id: rename
+        env:
+          SIGNED: ${{ steps.keystore.outputs.signed }}
+        run: |
+          VER=$(tr -d '\r\n' < VERSION)
+          if [ "$SIGNED" = "true" ]; then
+            SRC="$RUNNER_TEMP/wrapper/android/app/build/outputs/apk/release/app-release.apk"
+            OUT="calorie-${VER}-signed.apk"
+          else
+            SRC="$RUNNER_TEMP/wrapper/android/app/build/outputs/apk/debug/app-debug.apk"
+            OUT="calorie-${VER}-debug.apk"
+          fi
+          cp "$SRC" "$OUT"
+          echo "apk=$OUT" >> "$GITHUB_OUTPUT"
+          echo "Собран файл: $OUT"
+
+      - name: Проверить подпись
+        env:
+          SIGNED: ${{ steps.keystore.outputs.signed }}
+        run: |
+          if [ "$SIGNED" != "true" ]; then echo "APK отладочный, проверка подписи пропущена"; exit 0; fi
+          BT="${ANDROID_HOME}/build-tools/36.0.0"
+          "$BT/apksigner" verify --print-certs "${{ steps.rename.outputs.apk }}" | head -5
+
+      - name: Загрузить APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: calorie-apk-release
+          path: ${{ steps.rename.outputs.apk }}
+          if-no-files-found: error
