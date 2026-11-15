@@ -1,0 +1,8 @@
+{
+  "appId": "com.ronis759.calorieapk",
+  "appName": "Калория",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}

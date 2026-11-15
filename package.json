@@ -1,0 +1,18 @@
+{
+  "name": "calorie-apk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Android-оболочка приложения «Калория» на Capacitor",
+  "scripts": {
+    "sync:android": "cap sync android",
+    "open:android": "cap open android",
+    "add:android": "cap add android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0"
+  }
+}

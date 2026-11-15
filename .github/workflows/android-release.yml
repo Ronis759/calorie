@@ -11,6 +11,10 @@ on:
       - 'zxing.min.js'
       - 'icon-*.png'
       - 'VERSION'
+      - 'android/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.json'
       - '.github/workflows/android-release.yml'
   workflow_dispatch:
 
@@ -44,27 +48,19 @@ jobs:
           yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
           "$SDKMANAGER" --install "platforms;android-36" "build-tools;36.0.0" "platform-tools"
 
-      - name: Скачать Android-обёртку
+      - name: Собрать папку www для Android-оболочки
         run: |
-          curl -fsSL -o wrapper.tar.gz https://github.com/Ronis759/calorie_apk/archive/refs/heads/master.tar.gz
-          mkdir -p "$RUNNER_TEMP/wrapper"
-          tar -xzf wrapper.tar.gz -C "$RUNNER_TEMP/wrapper" --strip-components=1
-
-      - name: Положить свежие файлы приложения в обёртку
-        run: |
-          W="$RUNNER_TEMP/wrapper"
-          rm -rf "$W/www" "$W/android/app/src/main/assets/public"
-          mkdir -p "$W/www"
-          cp index.html help.html sw.js manifest.json zxing.min.js icon-180.png icon-192.png icon-512.png "$W/www/"
+          mkdir -p www
+          cp index.html help.html sw.js manifest.json zxing.min.js icon-180.png icon-192.png icon-512.png www/
+          ls -l www
 
       - name: Подставить версию
         run: |
-          W="$RUNNER_TEMP/wrapper"
           VER=$(tr -d '\r\n' < VERSION)
           CODE=$(echo "$VER" | tr -d '.')
-          sed -i "s/versionName \"[^\"]*\"/versionName \"${VER}\"/" "$W/android/app/build.gradle"
-          sed -i "s/versionCode [0-9]*/versionCode ${CODE}/" "$W/android/app/build.gradle"
-          grep -E 'version(Code|Name)' "$W/android/app/build.gradle"
+          sed -i "s/versionName \"[^\"]*\"/versionName \"${VER}\"/" android/app/build.gradle
+          sed -i "s/versionCode [0-9]*/versionCode ${CODE}/" android/app/build.gradle
+          grep -E 'version(Code|Name)' android/app/build.gradle
 
       - name: Восстановить ключ подписи из секретов
         id: keystore
@@ -81,15 +77,13 @@ jobs:
           echo "signed=true" >> "$GITHUB_OUTPUT"
 
       - name: Установить зависимости
-        working-directory: ${{ runner.temp }}/wrapper
         run: npm ci
 
       - name: Синхронизировать Capacitor
-        working-directory: ${{ runner.temp }}/wrapper
         run: npx cap sync android
 
       - name: Собрать APK
-        working-directory: ${{ runner.temp }}/wrapper/android
+        working-directory: android
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -111,10 +105,10 @@ jobs:
         run: |
           VER=$(tr -d '\r\n' < VERSION)
           if [ "$SIGNED" = "true" ]; then
-            SRC="$RUNNER_TEMP/wrapper/android/app/build/outputs/apk/release/app-release.apk"
+            SRC="android/app/build/outputs/apk/release/app-release.apk"
             OUT="calorie-${VER}-signed.apk"
           else
-            SRC="$RUNNER_TEMP/wrapper/android/app/build/outputs/apk/debug/app-debug.apk"
+            SRC="android/app/build/outputs/apk/debug/app-debug.apk"
             OUT="calorie-${VER}-debug.apk"
           fi
           cp "$SRC" "$OUT"
