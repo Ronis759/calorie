@@ -1,0 +1,78 @@
+name: Сборка iOS (IPA без подписи)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - 'index.html'
+      - 'help.html'
+      - 'sw.js'
+      - 'manifest.json'
+      - 'zxing.min.js'
+      - 'icon-*.png'
+      - 'VERSION'
+      - 'ios-app/**'
+      - '.github/workflows/ios-build.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Собрать IPA
+    runs-on: macos-15
+
+    steps:
+      - name: Получить исходники
+        uses: actions/checkout@v4
+
+      - name: Подготовить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Собрать папку www
+        run: |
+          mkdir -p ios-app/www
+          cp index.html help.html sw.js manifest.json zxing.min.js icon-180.png icon-192.png icon-512.png ios-app/www/
+
+      - name: Установить зависимости
+        working-directory: ios-app
+        run: npm ci
+
+      - name: Синхронизировать Capacitor
+        working-directory: ios-app
+        run: npx cap sync ios
+
+      - name: Собрать приложение без подписи
+        working-directory: ios-app
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Упаковать IPA
+        working-directory: ios-app
+        run: |
+          VER=$(tr -d '\r\n' < ../VERSION)
+          rm -rf Payload
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/App.app Payload/App.app
+          zip -qry "calorie-${VER}-unsigned.ipa" Payload
+          echo "ipa=calorie-${VER}-unsigned.ipa" >> "$GITHUB_OUTPUT"
+        id: package
+
+      - name: Загрузить IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: calorie-ipa
+          path: ios-app/${{ steps.package.outputs.ipa }}
+          if-no-files-found: error

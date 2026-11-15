@@ -1,0 +1,8 @@
+{
+  "appId": "com.ronis759.calorieios",
+  "appName": "Калория",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "automatic"
+  }
+}
