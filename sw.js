@@ -1,4 +1,4 @@
-const VERSION='v12.19',C='cal-'+VERSION,
+const VERSION='v12.20',C='cal-'+VERSION,
 // На GitHub Pages './' и 'index.html' — один и тот же файл, поэтому кэшируем его один раз.
 // Навигация по корню тоже попадёт в этот ключ: fetch-обработчик кладёт ответ под 'index.html'.
 F=['index.html','manifest.json','help.html','icon-180.png','icon-192.png','icon-512.png','VERSION'];
