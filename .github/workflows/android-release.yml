@@ -51,16 +51,28 @@ jobs:
       - name: Собрать папку www для Android-оболочки
         run: |
           mkdir -p www
-          cp index.html help.html sw.js manifest.json zxing.min.js icon-180.png icon-192.png icon-512.png www/
+          # VERSION обязателен: он есть в списке кэша sw.js (F=[...]), без него addAll получит 404
+          # и Service Worker не установится — из-за этого в APK не работало обновление.
+          cp index.html help.html sw.js manifest.json zxing.min.js icon-180.png icon-192.png icon-512.png VERSION www/
           ls -l www
+          # Проверяем, что в www лежит именно текущая версия и что VERSION в списке кэша SW есть физически.
+          test -s www/VERSION || { echo "::error::www/VERSION отсутствует или пуст"; exit 1; }
+          test "$(tr -d '\r\n' < www/VERSION)" = "$(tr -d '\r\n' < VERSION)" || { echo "::error::версия в www не совпадает с VERSION"; exit 1; }
+          grep -q "'VERSION'" www/sw.js || { echo "::error::sw.js не кэширует VERSION"; exit 1; }
+          grep -q "APP_VERSION='$(tr -d '\r\n' < VERSION)'" www/index.html || { echo "::error::APP_VERSION в index.html не совпадает с VERSION"; exit 1; }
+          echo "Проверка версии пройдена: $(tr -d '\r\n' < www/VERSION)"
 
       - name: Подставить версию
         run: |
           VER=$(tr -d '\r\n' < VERSION)
-          CODE=$(echo "$VER" | tr -d '.')
+          # Раньше было `tr -d '.'`: 12.2 и 12.20 давали одинаковый versionCode (122 vs 1220 — но 12.9/12.90 ломались).
+          # Теперь major*10000 + minor*100 + patch: 12.20 -> 120020, 12.2 -> 120002. Монотонно и без коллизий.
+          CODE=$(echo "$VER" | awk -F. '{printf "%d", $1*10000 + $2*100 + (($3=="")?0:$3)}')
+          if [ -z "$CODE" ] || [ "$CODE" -lt 1 ] 2>/dev/null; then echo "::error::не удалось вычислить versionCode из '$VER'"; exit 1; fi
           sed -i "s/versionName \"[^\"]*\"/versionName \"${VER}\"/" android/app/build.gradle
           sed -i "s/versionCode [0-9]*/versionCode ${CODE}/" android/app/build.gradle
           grep -E 'version(Code|Name)' android/app/build.gradle
+          echo "Версия: $VER (versionCode $CODE)"
 
       - name: Восстановить ключ подписи из секретов
         id: keystore
@@ -80,7 +92,14 @@ jobs:
         run: npm ci
 
       - name: Синхронизировать Capacitor
-        run: npx cap sync android
+        run: |
+          npx cap sync android
+          # cap sync копирует www/ в android/app/src/main/assets/public.
+          # Если там осталась старая версия — APK соберётся с устаревшим приложением.
+          PUBLIC=android/app/src/main/assets/public
+          test -f "$PUBLIC/VERSION" || { echo "::error::VERSION не попал в assets/public"; exit 1; }
+          echo "Версия в assets/public: $(tr -d '\r\n' < "$PUBLIC/VERSION")"
+          grep -q "APP_VERSION='$(tr -d '\r\n' < VERSION)'" "$PUBLIC/index.html" || { echo "::error::в assets/public лежит старая версия index.html"; exit 1; }
 
       - name: Собрать APK
         working-directory: android
