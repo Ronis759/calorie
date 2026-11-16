@@ -1,7 +1,19 @@
-const VERSION='v12.18',C='cal-'+VERSION,F=['./','index.html','manifest.json','help.html','icon-180.png','icon-192.png','icon-512.png','VERSION'];
+const VERSION='v12.19',C='cal-'+VERSION,
+// На GitHub Pages './' и 'index.html' — один и тот же файл, поэтому кэшируем его один раз.
+// Навигация по корню тоже попадёт в этот ключ: fetch-обработчик кладёт ответ под 'index.html'.
+F=['index.html','manifest.json','help.html','icon-180.png','icon-192.png','icon-512.png','VERSION'];
 
 self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(C).then(c=>c.addAll(F).then(()=>c.add('zxing.min.js').catch(()=>{}))).then(()=>self.skipWaiting()));
+  // Кэш наполняется ПОЛНОСТЬЮ до того, как SW станет готов к активации.
+  // skipWaiting здесь не вызываем: новый SW ждёт в состоянии waiting,
+  // а приложение решает, когда перезагрузиться (см. сообщение ниже).
+  // Раньше skipWaiting стоял прямо в install — SW активировался и стирал старый кэш,
+  // пока страница ещё работала на старой версии. Из-за этого PWA «зависало» на старом коде.
+  e.waitUntil(
+    caches.open(C)
+      .then(c=>c.addAll(F))
+      .then(()=>caches.open(C).then(c=>c.add('zxing.min.js').catch(()=>{})))
+  );
 });
 
 self.addEventListener('activate',e=>{
@@ -22,8 +34,9 @@ self.addEventListener('fetch',e=>{
   if(r.method!=='GET'||new URL(r.url).origin!==location.origin)return;
 
   if(r.mode==='navigate'){
-    // сеть с таймаутом 3 с, иначе кэш (на плохой связи приложение не «висит»)
-    const net=fetch(r).then(x=>put(r,x));
+    // Сеть с таймаутом 3 с, иначе кэш. Ответ всегда кладём и под ключ навигации, и под index.html,
+    // чтобы работал и запуск по корню '/calorie/', и прямой переход на index.html.
+    const net=fetch(r).then(x=>{put(r,x);if(x&&x.ok){const y=x.clone();caches.open(C).then(c=>c.put('index.html',y).catch(()=>{}))}return x});
     const slow=new Promise((_,no)=>setTimeout(no,3000));
     e.respondWith(
       Promise.race([net,slow]).catch(()=>
