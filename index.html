@@ -135,11 +135,11 @@ try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{try
 <details class="setsec" id="setTheme"><summary><span><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg> Тема</span><svg class="ic cv" aria-hidden="true"><use href="#i-chev-d"/></svg></summary><div class="secbody"><div class="tm" id="tm"></div><label class="l">Цвет оформления</label><div class="pal" id="pal"></div><div id="cpan" class="cpn" hidden><label class="l">Оттенок</label><input type="range" id="c-h" min="0" max="360" class="rg hue"><label class="l">Насыщенность</label><input type="range" id="c-s" min="20" max="100" class="rg"><label class="l">Яркость</label><input type="range" id="c-l" min="30" max="55" class="rg"></div></div></details>
 <details class="setsec" id="conn"><summary><span><svg class="ic" aria-hidden="true"><use href="#i-server"/></svg> Подключение к серверу</span><svg class="ic cv" aria-hidden="true"><use href="#i-chev-d"/></svg></summary><div class="secbody"><label class="l" style="margin-top:0">Адрес сервера (Cloudflare Worker)</label><input type="url" id="url" placeholder="https://....workers.dev"><label class="l">Пароль приложения</label><input type="password" id="tok"><button class="sec" id="lnk" style="width:100%;margin-top:10px">Вставить ссылку настройки</button></div></details>
 <details class="setsec" id="setData"><summary><span><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Сохранить/Восстановить</span><svg class="ic cv" aria-hidden="true"><use href="#i-chev-d"/></svg></summary><div class="secbody"><button class="bkb" style="width:100%;margin-bottom:8px"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>Сохранить</button><label class="btn sec" style="width:100%;border:1px solid var(--ln)"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Восстановить<input class="f" type="file" accept="application/json,.json" id="imp"></label><p class="mu" style="font-size:13px">Копия включает дневник, избранное, историю и настройки. Данные в Safari и в приложении с экрана «Домой» хранятся раздельно.</p></div></details>
-<details class="setsec" id="setAbout"><summary><span><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg> О программе</span><svg class="ic cv" aria-hidden="true"><use href="#i-chev-d"/></svg></summary><div class="secbody"><p style="margin:0 0 6px"><b>Калории v12.22</b></p><p class="mu" style="font-size:13px;margin:0 0 10px">Трекер питания: распознавание еды по фото и тексту, БЖУ, дневник, календарь, графики, избранное и резервные копии. Данные хранятся на устройстве.</p><p class="mu" style="font-size:13px;margin:0 0 10px"><b>История:</b> v10 — профиль, вес, графики; v11 — анимации, поиск в избранном, история распознаваний, обновление PWA; v11.8–11.9 — окно статистики и обновление прямо в приложении; v12.2 — цель по калориям и главные кнопки; v12.3 — цветная анимация числа калорий; v12.4 — увеличенный индикатор и компактные БЖУ; v12.5 — обновление суммы калорий в окне и увеличенная анимация числа; v12.6 — обновление данных панели после открытия; v12.7 — в круге показываются употреблённые калории; v12.8 — подпись «калорий»; v12.10 — автоматическая проверка обновлений и перезапуск после активации новой версии; v12.11 — подпись в круге «калории»; v12.12 — принудительная замена старой подписи в круге; v12.13 — удалена история распознаваний, повтор вчерашнего дня перенесён в избранное. История: v12.1 — раздел «Сохранить/Восстановить» с кнопками «Сохранить» и «Восстановить».</p><button id="updateBtn" style="width:100%"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg><span id="updateLabel">Проверить обновление</span></button><button id="hardUpdateBtn" class="btn sec" style="width:100%;margin-top:8px;border:1px solid var(--ln)"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg>Перезагрузить принудительно</button><a id="apkDownload" class="btn sec" href="https://github.com/Ronis759/calorie/actions/workflows/android-release.yml" target="_blank" rel="noopener" hidden style="width:100%;margin-top:8px;text-decoration:none;border:1px solid var(--ln)"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>Скачать свежий APK</a><p class="mu" id="updateStatus" style="font-size:13px"></p><a class="btn sec" href="help.html" style="width:100%;text-decoration:none;border:1px solid var(--ln)"><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg>Справка</a></div></details>
+<details class="setsec" id="setAbout"><summary><span><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg> О программе</span><svg class="ic cv" aria-hidden="true"><use href="#i-chev-d"/></svg></summary><div class="secbody"><p style="margin:0 0 6px"><b>Калории v12.23</b></p><p class="mu" style="font-size:13px;margin:0 0 10px">Трекер питания: распознавание еды по фото и тексту, БЖУ, дневник, календарь, графики, избранное и резервные копии. Данные хранятся на устройстве.</p><p class="mu" style="font-size:13px;margin:0 0 10px"><b>История:</b> v10 — профиль, вес, графики; v11 — анимации, поиск в избранном, история распознаваний, обновление PWA; v11.8–11.9 — окно статистики и обновление прямо в приложении; v12.2 — цель по калориям и главные кнопки; v12.3 — цветная анимация числа калорий; v12.4 — увеличенный индикатор и компактные БЖУ; v12.5 — обновление суммы калорий в окне и увеличенная анимация числа; v12.6 — обновление данных панели после открытия; v12.7 — в круге показываются употреблённые калории; v12.8 — подпись «калорий»; v12.10 — автоматическая проверка обновлений и перезапуск после активации новой версии; v12.11 — подпись в круге «калории»; v12.12 — принудительная замена старой подписи в круге; v12.13 — удалена история распознаваний, повтор вчерашнего дня перенесён в избранное. История: v12.1 — раздел «Сохранить/Восстановить» с кнопками «Сохранить» и «Восстановить».</p><button id="updateBtn" style="width:100%"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg><span id="updateLabel">Проверить обновление</span></button><button id="hardUpdateBtn" class="btn sec" style="width:100%;margin-top:8px;border:1px solid var(--ln)"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg>Перезагрузить принудительно</button><a id="apkDownload" class="btn sec" href="https://github.com/Ronis759/calorie/actions/workflows/android-release.yml" target="_blank" rel="noopener" hidden style="width:100%;margin-top:8px;text-decoration:none;border:1px solid var(--ln)"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>Скачать свежий APK</a><p class="mu" id="updateStatus" style="font-size:13px"></p><a class="btn sec" href="help.html" style="width:100%;text-decoration:none;border:1px solid var(--ln)"><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg>Справка</a></div></details>
 </section><nav class="bar"><button class="ab sec" id="calb"><i><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg></i>Календарь</button><button class="ab sec" id="gear"><i><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg></i>Настройки</button></nav>
 <div id="toast"></div><script src="zxing.min.js" defer></script><script>
 const $=id=>document.getElementById(id),def={entries:[],favs:[],history:[],weights:[],profile:{},goal:0,url:'',token:'',lastBackup:0,theme:'auto',pal:'sun',cust:'#e0510b'};
-const APP_VERSION='12.22',GITHUB_VERSION_URL='https://raw.githubusercontent.com/Ronis759/calorie/main/VERSION',PAGES_URL='https://ronis759.github.io/calorie';
+const APP_VERSION='12.23',GITHUB_VERSION_URL='https://raw.githubusercontent.com/Ronis759/calorie/main/VERSION',PAGES_URL='https://ronis759.github.io/calorie';
 const M=[['b','sunrise','Завтрак'],['l','sun','Обед'],['d','sunset','Ужин'],['s','cookie','Перекус']];
 const ic=(n,c)=>`<svg class="ic${c?' '+c:''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const IC=[['суп|борщ|щи|бульон','soup'],['яйц|омлет|яичн','egg'],['салат|овощ|огур|помидор|томат','leaf'],['каш|овсян|гречк|рис|плов','soup'],['макарон|паста|спагетти|лапш','soup'],['пицц','burger'],['бургер','burger'],['сэндвич|бутерброд|тост|хлеб','burger'],['курин|кури|птиц|индейк','utensils'],['мяс|стейк|говяд|свин|котлет|колбас|сосис','utensils'],['рыб|лосос|тунец|креветк|суши|ролл','fish'],['картоф|пюре|фри','leaf'],['творог|сыр|йогурт|молок|кефир','glass'],['кофе|капучино|латте','coffee'],['чай','coffee'],['сок|напит|компот','coffee'],['яблок|банан|фрукт|ягод|апельсин','apple'],['торт|пирож|печень|шоколад|десерт|конфет|мороженое|выпечк|булк|круассан','cookie'],['пельмен|вареник|хинкали|блин|оладь','burger']];
@@ -148,9 +148,46 @@ const ico=f=>ico1(f.dish)||ico1((f.items||[]).map(i=>i.name).join(' '))||ic('ute
 const auto=d=>{const h=d.getHours();return h<11?'b':h<16?'l':h<21?'d':'s'};
 const OPEN=new Set();
 let busy=false,S=load(),day=new Date(),cur=null,meal=auto(new Date()),favEdit=false,calM=new Date(),tt;
-function load(){let o;try{o=Object.assign({},def,JSON.parse(localStorage.getItem('cal')||'{}'))}catch(e){o={...def}}if(!Array.isArray(o.entries))o.entries=[];if(!Array.isArray(o.favs))o.favs=[];if(!Array.isArray(o.history))o.history=[];if(!o.barcodes||typeof o.barcodes!=='object'||Array.isArray(o.barcodes))o.barcodes={};o.goal=+o.goal||0;return o}
+function load(){
+  let raw=null,o;
+  try{raw=localStorage.getItem('cal')}catch(e){}
+  try{o=Object.assign({},def,JSON.parse(raw||'{}'))}
+  catch(e){
+    // Данные повреждены. Раньше приложение молча начинало с пустого дневника.
+    // Теперь сохраняем испорченный текст отдельно, чтобы его можно было спасти вручную.
+    try{if(raw)localStorage.setItem('cal_broken_'+Date.now(),raw)}catch(e2){}
+    o={...def}
+    setTimeout(()=>{try{alert('Данные дневника были повреждены и не загрузились. Испорченная копия сохранена в резервных копиях на устройстве.')}catch(e3){}},300);
+  }
+  if(!Array.isArray(o.entries))o.entries=[];if(!Array.isArray(o.favs))o.favs=[];if(!Array.isArray(o.history))o.history=[];if(!o.barcodes||typeof o.barcodes!=='object'||Array.isArray(o.barcodes))o.barcodes={};o.goal=+o.goal||0;return o}
+// Страховочная копия раз в сутки: если сегодняшняя ещё не сделана — кладём снимок данных.
+// Ключ cal_auto_YYYY-MM-DD, храним 7 последних и не занимаем много места.
+function autoBackup(){
+  try{
+    // Формируем ключ локально (а не через dk), чтобы функция не зависела от порядка объявлений ниже.
+    const d=new Date(),p=n=>String(n).padStart(2,'0');
+    const dayKey=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+    const k='cal_auto_'+dayKey;
+    const cur=JSON.stringify(S);
+    const prev=localStorage.getItem(k);
+    if(prev===cur)return; // без изменений — не плодим записи
+    if(!prev&&S.entries.length===0&&S.favs.length===0)return; // нечего сохранять
+    localStorage.setItem(k,cur);
+    // Чистим старые авто-копии, оставляем 7 самых свежих.
+    // Ключи собираем в массив ДО удаления: при удалении localStorage.length меняется.
+    const keys=[];
+    let n=0;
+    try{n=localStorage.length||0}catch(e){n=0}
+    for(let i=0;i<n;i++){
+      let name=null;
+      try{name=localStorage.key(i)}catch(e){}
+      if(name&&name.indexOf('cal_auto_')===0)keys.push(name);
+    }
+    keys.sort().reverse().slice(7).forEach(name=>{try{localStorage.removeItem(name)}catch(e){}});
+  }catch(e){}
+}
 function fixS(){if(!Array.isArray(S.entries))S.entries=[];if(!Array.isArray(S.favs))S.favs=[];if(!Array.isArray(S.history))S.history=[];if(!S.barcodes||typeof S.barcodes!=='object'||Array.isArray(S.barcodes))S.barcodes={};S.goal=+S.goal||0}
-function save(){try{localStorage.setItem('cal',JSON.stringify(S));return true}catch(e){toast('Не удалось сохранить: память заполнена');return false}}
+function save(){try{localStorage.setItem('cal',JSON.stringify(S));autoBackup();return true}catch(e){toast('Не удалось сохранить: память заполнена');return false}}
 const pad=n=>String(n).padStart(2,'0'),dk=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const val=(i,k)=>{const bg=+i.b?.g||0;return bg>0?(+i.b[k]||0)*(+i.g||0)/bg:(+i.b?.[k]||0)};
 const r0=n=>Math.round(n||0),mealOf=x=>x.meal||auto(new Date(x.id||Date.now()));

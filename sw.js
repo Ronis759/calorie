@@ -1,7 +1,10 @@
-const VERSION='v12.22',C='cal-'+VERSION,
-// На GitHub Pages './' и 'index.html' — один и тот же файл, поэтому кэшируем его один раз.
-// Навигация по корню тоже попадёт в этот ключ: fetch-обработчик кладёт ответ под 'index.html'.
-F=['index.html','manifest.json','help.html','icon-180.png','icon-192.png','icon-512.png','VERSION'];
+const VERSION='v12.23',C='cal-'+VERSION,
+// MUST — без этих файлов приложение не запустится: если хоть один вернёт 404, SW не установится.
+// SOFT — необязательные: их отсутствие не должно ломать установку.
+// Единый список используется и здесь, и в проверке сборки APK.
+MUST=['index.html','manifest.json','help.html','VERSION'],
+SOFT=['icon-180.png','icon-192.png','icon-512.png','zxing.min.js'],
+F=MUST.concat(SOFT);
 
 self.addEventListener('install',e=>{
   // Кэш наполняется ПОЛНОСТЬЮ до того, как SW станет готов к активации.
@@ -9,10 +12,14 @@ self.addEventListener('install',e=>{
   // а приложение решает, когда перезагрузиться (см. сообщение ниже).
   // Раньше skipWaiting стоял прямо в install — SW активировался и стирал старый кэш,
   // пока страница ещё работала на старой версии. Из-за этого PWA «зависало» на старом коде.
+  //
+  // addAll отклоняется целиком, если хотя бы один файл вернул 404 — и тогда SW не ставится вообще.
+  // Качаем по одному: обязательные файлы должны быть, а необязательные (zxing) не валят установку.
   e.waitUntil(
-    caches.open(C)
-      .then(c=>c.addAll(F))
-      .then(()=>caches.open(C).then(c=>c.add('zxing.min.js').catch(()=>{})))
+    caches.open(C).then(c=>Promise.all([
+      Promise.all(MUST.map(f=>c.add(new Request(f,{cache:'reload'})))),
+      Promise.all(SOFT.map(f=>c.add(new Request(f,{cache:'reload'})).catch(()=>{})))
+    ]))
   );
 });
 

@@ -51,8 +51,8 @@ jobs:
       - name: Собрать папку www для Android-оболочки
         run: |
           mkdir -p www
-          # VERSION обязателен: он есть в списке кэша sw.js (F=[...]), без него addAll получит 404
-          # и Service Worker не установится — из-за этого в APK не работало обновление.
+          # VERSION обязателен: он входит в список кэша sw.js (MUST), без него Service Worker
+          # получит 404 при установке и не поставится — из-за этого в APK не работало обновление.
           cp index.html help.html sw.js manifest.json zxing.min.js icon-180.png icon-192.png icon-512.png VERSION www/
           ls -l www
           # Проверяем, что в www лежит именно текущая версия и что VERSION в списке кэша SW есть физически.
@@ -60,13 +60,23 @@ jobs:
           test "$(tr -d '\r\n' < www/VERSION)" = "$(tr -d '\r\n' < VERSION)" || { echo "::error::версия в www не совпадает с VERSION"; exit 1; }
           grep -q "'VERSION'" www/sw.js || { echo "::error::sw.js не кэширует VERSION"; exit 1; }
           grep -q "APP_VERSION='$(tr -d '\r\n' < VERSION)'" www/index.html || { echo "::error::APP_VERSION в index.html не совпадает с VERSION"; exit 1; }
+          # Проверяем КАЖДЫЙ файл из списков кэша sw.js (MUST и SOFT): если обязательного нет,
+          # установка SW провалится с 404, и обновление в APK/PWA перестанет работать.
+          FILES=$(sed -n "s/^\(MUST\|SOFT\)=\[\(.*\)\][,;]*$/\2/p" www/sw.js | tr -d "'" | tr ',' ' ')
+          if [ -z "$FILES" ]; then echo "::error::не удалось прочитать списки MUST/SOFT из sw.js"; exit 1; fi
+          echo "Файлы кэша из sw.js: $(echo $FILES | tr '\n' ' ')"
+          for f in $FILES; do
+            test -s "www/$f" || { echo "::error::файл из кэша sw.js отсутствует или пуст: www/$f"; exit 1; }
+          done
+          echo "Все файлы кэша на месте."
           echo "Проверка версии пройдена: $(tr -d '\r\n' < www/VERSION)"
 
       - name: Подставить версию
         run: |
           VER=$(tr -d '\r\n' < VERSION)
-          # Раньше было `tr -d '.'`: 12.2 и 12.20 давали одинаковый versionCode (122 vs 1220 — но 12.9/12.90 ломались).
-          # Теперь major*10000 + minor*100 + patch: 12.20 -> 120020, 12.2 -> 120002. Монотонно и без коллизий.
+          # versionCode = major*10000 + minor*100 + patch.
+          # 12.22 -> 122200, 12.20 -> 122000, 12.2 -> 120200. Растёт без коллизий.
+          # Старая схема `tr -d '.'` ломалась: 12.9 и 12.90 давали одно и то же число.
           CODE=$(echo "$VER" | awk -F. '{printf "%d", $1*10000 + $2*100 + (($3=="")?0:$3)}')
           if [ -z "$CODE" ] || [ "$CODE" -lt 1 ] 2>/dev/null; then echo "::error::не удалось вычислить versionCode из '$VER'"; exit 1; fi
           sed -i "s/versionName \"[^\"]*\"/versionName \"${VER}\"/" android/app/build.gradle
@@ -78,13 +88,23 @@ jobs:
         id: keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "::warning::Секреты подписи не заданы — будет собран отладочный APK. Добавьте ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS и ANDROID_KEY_PASSWORD."
-            echo "signed=false" >> "$GITHUB_OUTPUT"
-            exit 0
+          # Раньше при отсутствии секретов сборка молча делала отладочный APK и выглядела успешной.
+          # Теперь это ошибка: неподписанный APK нельзя поставить поверх установленного приложения.
+          missing=""
+          [ -z "$KEYSTORE_BASE64" ] && missing="$missing ANDROID_KEYSTORE_BASE64"
+          [ -z "$KEYSTORE_PASSWORD" ] && missing="$missing ANDROID_KEYSTORE_PASSWORD"
+          [ -z "$KEY_ALIAS" ] && missing="$missing ANDROID_KEY_ALIAS"
+          [ -z "$KEY_PASSWORD" ] && missing="$missing ANDROID_KEY_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Не заданы секреты подписи:$missing. Добавьте их в Settings → Secrets and variables → Actions."
+            exit 1
           fi
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          test -s "$RUNNER_TEMP/release.jks" || { echo "::error::Ключ подписи пустой после декодирования"; exit 1; }
           ls -l "$RUNNER_TEMP/release.jks"
           echo "signed=true" >> "$GITHUB_OUTPUT"
 
@@ -108,39 +128,29 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          SIGNED: ${{ steps.keystore.outputs.signed }}
         run: |
           chmod +x gradlew
-          if [ "$SIGNED" = "true" ]; then
-            ./gradlew assembleRelease --no-daemon --stacktrace
-          else
-            ./gradlew assembleDebug --no-daemon --stacktrace
-          fi
+          ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Переименовать APK
         id: rename
-        env:
-          SIGNED: ${{ steps.keystore.outputs.signed }}
         run: |
           VER=$(tr -d '\r\n' < VERSION)
-          if [ "$SIGNED" = "true" ]; then
-            SRC="android/app/build/outputs/apk/release/app-release.apk"
-            OUT="calorie-${VER}-signed.apk"
-          else
-            SRC="android/app/build/outputs/apk/debug/app-debug.apk"
-            OUT="calorie-${VER}-debug.apk"
-          fi
+          SRC="android/app/build/outputs/apk/release/app-release.apk"
+          OUT="calorie-${VER}-signed.apk"
+          test -f "$SRC" || { echo "::error::APK не создан: $SRC"; exit 1; }
           cp "$SRC" "$OUT"
           echo "apk=$OUT" >> "$GITHUB_OUTPUT"
           echo "Собран файл: $OUT"
 
       - name: Проверить подпись
-        env:
-          SIGNED: ${{ steps.keystore.outputs.signed }}
         run: |
-          if [ "$SIGNED" != "true" ]; then echo "APK отладочный, проверка подписи пропущена"; exit 0; fi
           BT="${ANDROID_HOME}/build-tools/36.0.0"
-          "$BT/apksigner" verify --print-certs "${{ steps.rename.outputs.apk }}" | head -5
+          APK="${{ steps.rename.outputs.apk }}"
+          "$BT/apksigner" verify --print-certs "$APK" | head -5
+          # Дополнительно убеждаемся, что APK действительно подписан (не только что файл существует).
+          "$BT/apksigner" verify "$APK" || { echo "::error::APK не прошёл проверку подписи"; exit 1; }
+          echo "Подпись APK проверена."
 
       - name: Загрузить APK
         uses: actions/upload-artifact@v4
